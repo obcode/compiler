@@ -1,0 +1,58 @@
+% Compiler
+% Prof. Dr. Oliver Braun
+% SS 2014
+
+## Was ist ein Compiler?
+
+### Brainstorming
+
+10 Minuten überlegen mit dem/der NachbarIn
+
+### Fragestellungen
+
+-   Wofür wird ein Compiler benötigt?
+-   Was für (Teil-)Aufgaben hat ein Compiler?
+-   Warum wird manchmal kein Compiler benötigt?
+-   Warum sollen Sie lernen wie ein Compiler intern aus sieht?
+
+
+## Ziel --- Modulbeschreibung
+
+-   Die Fähigkeit, Algorithmen und Methoden des Compilerbaus zur Lösung von Problemen bei der Entwicklung von Software einzusetzen;
+-   Die Kenntnis von Strukturen von Programmiersprachen, ihrer konzeptionellen Möglichkeiten und Grenzen;
+-   Die Umsetzung dieser Strukturen in einem Compiler oder Interpreter.
+
+## Vorlesung
+
+-   klassischer seminaristischer Unterricht
+-   meine Grundlage: [Keith Cooper, Linda Torczon: Engineering a Compiler, Elsevier, 2012.](https://www.elsevier.com/books/engineering-a-compiler/cooper/978-0-12-088478-0)
+-   Inhalt
+    -   Scanner
+    -   Parser
+    -   Intermediate Representation
+    -   Optimization
+
+## Praktikum
+
+-   Aufgaben zum Stoff
+-   Bearbeitung in [Haskell](http://haskell.org/)
+-   Einführung in Haskell im Praktikum
+
+## Leistungsnachweise
+
+### Schein
+
+-   Sie programmieren in Haskell in Zweiergruppen einen Compiler
+-   und präsentieren uns Ihr Ergebnis in den letzten Praktikumsterminen
+
+Standardaufgabe für alle
+:   "Compiler" der Markdown in HTML übersetzt
+
+-   Abweichungen der Aufgabenstellung sind in Absprache mit mir möglich
+-   Haskell und Zweiergruppen sind definitiv gesetzt
+
+### Klausur
+
+-   Stoff aus Vorlesung und Praktikum
+-   keine Hilfsmittel erlaubt
+

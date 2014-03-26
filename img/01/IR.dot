@@ -1,0 +1,28 @@
+digraph IR {
+	x1 [label = "*"]
+	x3 [label = "*"]
+	x2 [label = "*"]
+	x4 [label = "*"]
+	"=" -> a
+	"=" -> x1
+	x1 -> a
+	x1 -> x2
+	x2 -> 2
+	x2 -> x3
+	x3 -> b
+	x3 -> x4
+	x4 -> c
+	x4 -> d
+	{
+		rank = same
+		a -> x2 [style=invis]
+	}
+	{
+		rank = same
+		2 -> x3 [style=invis]
+	}
+	{
+		rank = same
+		b -> x4 [style=invis]
+	}
+}

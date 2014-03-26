@@ -1,0 +1,266 @@
+% Compiler  
+  --- Introduction ---
+% Prof. Dr. Oliver Braun
+% SS 2014
+
+## A compiler ...
+
+-	is a computer program
+-	that translates a program
+	-	written in one language
+-	into a program
+	-	written in another language
+
+## A compiler ...
+
+-	is a large software system
+-	with many
+	-	internal components and
+	-	algorithms and
+	-	complex interactions between them
+
+## The study of compiler construction
+
+-	is an introduction to techniques for the
+	-	translation and
+	-	improvements of programs
+-	and a practical exercise in
+	-	software engineering
+
+## Conceptual Roadmap
+
+-	a compiler needs to understand
+	-	**syntax** and
+	-	**meaning**
+	of the input language
+	-	**syntax** and
+	-	**meaning**
+	of the output language
+-	and a compiler needs a
+	-	**scheme for mapping** content
+
+	from the source language to the target language
+
+## Programming languages
+
+-	formal languages
+-	have rigid properties and meanings
+-	are designed to avoid ambiguity
+
+## Compiler
+
+-	source
+	-	e.g., Java, C, C++, ...
+-	to target
+	-	e.g. Machine Code for xy, bytecode for the JVM or .NET
+-	also *source-to-source-translators*
+	-	e.g., translating a new PL to C
+-	other, e.g.,
+	-	LaTeX to PostScript
+	-	Markdown to HTML
+
+## Interpreter
+
+-	executes the program
+-	needs also scanner, parser, intermediate representation, ...
+-	e.g., Perl, Scheme, ...
+
+## Combined
+
+-	Compiler to bytecode
+-	bytecode will be run by an interpreter
+
+### often also a JIT
+
+-	Compiler that executes at run-time
+-	*just-in-time compiler*
+
+## Why study compiler design
+
+-	a compiler contains a microcosmos of computer science
+	-	greedy algorithms (register allocation)
+	-	heuristic search techniques (list scheduling)
+	-	graph algorithms (dead-code elimination)
+	-	dynamic programming (instruction selection)
+	-	finite automata and push-down automata (scanning and parsing)
+	-	fixed-point algorithms (data-flow analysis)
+-	deals with problems such as
+	-	dynamic allocation
+	-	synchronization
+	-	naming
+	-	locality
+	-	memory hierarchy management
+	-	pipeline scheduling
+
+## Theory and practice
+
+Compiler demonstrate the successful application of theory to practical problems
+
+-	tools for generating scanners and parsers
+	-	apply results from formal language theory
+	-	same tools are used for, text searching, website filtering, word processing, and command-language interpreters
+-	type checking and static analysis
+	-	apply results from lattice theory (german: Verbandstheorie), number theory, and other branches of mathematics
+-	code generators
+	use algorithms for tree-pattern matching, parsing, dynamic programming, and text matching
+
+## The Fundamental Principles of Compilation
+
+### First Principle
+
+>	The compiler must preserve the meaning of the program being compiled.
+
+### Second Principle
+
+>	The compiler must improve the input program in some discernible way.
+
+## Compiler Structure
+
+![A Two-Phase Compiler](img/01/FrontBackend.png)
+
+## Compiler Structure ...
+
+-	front end must encode its knowledge of the *source*
+	-	must ensure that the source program is well formed
+-	intermediate representation (IR) becomes the compiler's definitive representation for the code
+	-	there can be more IRs according to the compiler phases
+-	back end must map the IR program into
+	-	the instruction set and
+	-	the finite resources
+
+## Optimizer
+
+![A Three-Phase Compiler](img/01/CompilerWithOptimizer.png)
+
+## Overview of Translation
+
+-	the compiler has to run through many steps
+
+-	example code
+
+		a = a * 2 * b * c * d
+
+## The front end
+
+-	must compare the program's structure against a **definition of the language**
+-	formal definition = finite set of rules = **grammar**, e.g.
+
+	*Sentence* → *Subject* `verb` *Objekt* `endmark`
+
+	-	`verb` and `endmark` are parts of speech
+	-	*Sentence*, *Subject*, and *Object* are syntactic variables
+	-	the symbol **→** reads "derives"
+
+## Scanner
+
+-	example: "Compilers are engineered objects."
+-	the scanner
+	-	takes this stream of characters and
+	-	converts it to a stream of classified words
+-	example:
+
+	(`noun`,"Compilers"), (`verb`, "are"), (`adjective`, "engineered"),  
+	(`noun`, "objects"), (`endmark`,".")
+
+## Parser
+
+-	rules
+
+	1.	*Sentence* → *Subject* `verb` *Object* `endmark`
+	2.	*Subject* → `noun`
+	3.	*Subject* → *Modifier* `noun`
+	4.	*Object* → `noun`
+	5. 	*Object* → *Modifier* `noun`
+	6.	*Modifier* → `adjective` \
+		...
+
+-	if it's possible to find a derivation
+	-	starting from *Sentence* and
+	-	ending with `noun verb adjective noun endmark`
+
+	the sentence "Compiler are engineered objects." belongs to the language
+
+-	the process of automatically finding derivations is called **parsing**
+
+## Type checking
+
+- 	the front end is also responsible for checking type consistencies
+-	e.g.,
+
+		a = a * 2 * b * c * d
+
+	might be syntactically well formed
+
+	but if `b` and `d` were character strings, the expression might still be invalid
+	
+## Intermediate Representation
+
+-	final issue of the front end is generation an IR
+-	different forms of IRs
+	-	graphs
+	-	assembly code program
+
+## IR Example: Graph
+
+![](img/01/IR.png)
+
+## IR Example: low-level, sequential Code
+
+~~~~
+t0 = a * 2
+t1 = t0 * b
+t2 = t1 * c
+t3 = t2 * d
+a = t3
+~~~~
+
+## The Optimizer
+
+-	analyzes the IR
+-	and rewrites the code so that it computes the same in a more efficient way, i.e.,
+	-	reduce the application's running time or
+	-	reduce the size of the generated code or
+	-	reduce the energy that the processor consumes
+	-	or ...
+
+## Example
+
+-	original Code
+
+	~~~~
+	b = ...
+	c = ...
+	a = 1
+	for i = 1 to n
+		read d
+		a = a * 2 * b * c * d
+		end
+	~~~~
+
+-	improved Code
+
+	~~~~
+	b = ...
+	c = ...
+	a = 1
+	t = 2 * b * c
+	for i = 1 to n
+		read d
+		a = a * d * t
+		end
+	~~~~
+
+## The Back End
+
+-	traverses the IR form and
+-	emits code for the target machine
+
+Instruction Selection
+:	selects target machine operations to implement each IR operation
+Register Allocation
+:	decides which values will reside in registers or in memory
+Instruction Scheduling
+:	chooses an order in which the operations will execute efficiently
+
+
+<!-- vim:spell spelllang=en: -->
