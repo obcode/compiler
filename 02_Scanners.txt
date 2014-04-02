@@ -1,0 +1,209 @@
+% Compiler  
+  --- Scanners ---
+% Prof. Dr. Oliver Braun
+% SS 2014
+
+## Scanner
+
+-   first stage of process to understand the input program
+-   scanner = lexical analyzer
+-   scanner
+    -   reads a stream of characters
+    -   produces a stream of words
+-   aggregates characters to form words
+-   applies a set of rules to determine whether or not the word is valid
+-   asign it a syntactic category, if the word is valid
+
+## Recognizing Words --- example
+
+example: recognizing `new`
+
+pseudo code
+
+~~~~
+c = nextChar();
+if (c == 'n')
+    then begin;
+        c = nextChar();
+        if (c == 'e')
+            then begin;
+                c = nextChar();
+                if (c == 'w')
+                    then report success;
+                    else try something else;
+            end;
+            else try something else;
+    end;
+    else try something else;
+~~~~
+
+## Recognizing Words --- example
+
+transition diagram:
+
+![](img/02/FAnew.png)
+
+Haskell:
+
+~~~~ {.haskell}
+recognizeNew :: [Char] -> Bool
+recognizeNew ('n':'e':'w':_) = True
+recognizeNew _               = False
+~~~~
+
+## Recognizing different words
+
+![](img/02/FAnewnotwhile.png)
+
+## A Formalism for Recognizers
+
+-   transition diagrams can be viewed as mathematical objects, called **finite automata**
+
+### A finite automaton (FA)
+
+(german: Endlicher Automat (EA))
+
+is a five-tuple $(S, \Sigma, \delta, s_0, S_A)$ where
+
+-   $S$ is the finite set of states in the recognizer, along with an error state $s_e$.
+-   $\Sigma$ is the alphabet used by the recognizer. Typically the union of the edge labels in the transition diagram.
+-   $\sigma(s,c)$ is the recognizer's transition function. It maps each state $s \in S$ and each character
+    $c \in \Sigma$ into some next state.
+    In state $s_i$ with input character $c$, the FA takes the transition
+    $s_i \stackrel{c}{\mapsto} \sigma(s_i,c)$.
+-   $s_0 \in S$ is the designated start state.
+-   $S_A$ is the set of accepting states, $S_A \subseteq S$. Each state in $S_A$ appears as a double circle
+    in the transition diagram.
+
+## Example
+
+![](img/02/FAnewnotwhile.png)
+
+$S = \{ s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9, s_{10}, s_e \}$
+
+$\Sigma = \{ \mathtt{e}, \mathtt{h}, \mathtt{i}, \mathtt{l}, \mathtt{n}, \mathtt{o}, \mathtt{t}, \mathtt{w} \}$
+
+$\sigma = \{ s_0 \stackrel{n}{\mapsto} s_1,
+             s_0 \stackrel{w}{\mapsto} s_6, 
+             s_1 \stackrel{e}{\mapsto} s_2, ...
+          \}$
+
+$s_0 = s_0$
+
+$S_A = \{ s_3, s_5, s_{10} \}$
+
+Exercise: Add the missing mappings to $\sigma$. 
+
+## Example in Haskell
+
+[Clone in FP Haskell Center](https://www.fpcomplete.com/ide?title=FA1&paste=http://ob.cs.hm.edu/docs/lectures/compiler/code/FA1.hs)
+
+[Code](http://ob.cs.hm.edu/docs/lectures/compiler/code/FA1.hs)
+
+## Recognizing positiv Numbers
+
+![](img/02/FAposInt.png)
+
+## Regular Expressions
+
+-   the set of words accepted by a finite automaton, $\cal F$, forms a language, denoted $L(\cal F)$
+-   the transition diagram of the FA specifies that language
+-   a more intuitive specification is using a notation called a **regular expression** (RE)
+-   the language described by an RE is called a **regular language**
+-   REs are equivalent to FAs
+
+## Formalizing Regular Expressions
+
+A RE $r$ describes
+
+-   a set of strings, called *language*, denoted $L(r)$
+-   over the characters contained in some alphabet $\Sigma$
+-   augmented with a character $\epsilon$ that represents the empty string
+
+## Operations
+
+An RE is build up from three basic operations
+
+Alternation
+:   The alternation, or union, of two sets of strings $R$ and $S$, denoted $R|S$,
+    is $\{ x | x \in R \mbox{ or } x \in S \}$.
+
+Concatenation
+:   The concatenation of two sets $R$ and $S$, denoted $RS$, contains all strings
+    formed by prepending an element of $R$ onto one from $S$, or
+    $\{ xy | x \in R \mbox{ and } y \in S \}$.
+
+Closure
+:   The Kleene closure of a set $R$, denoted $R^*$, is $\bigcup^{\infty}_{i=0} R^i$
+    This is just the union of the concatenations of $R$ with itself, zero or more times.
+
+For convenience we often use
+
+Finite Closure
+:   $R^i$, for some positive $i$
+
+Positive Closure
+:   $R^+$ which is just $RR^*$
+
+## Defining Regular Expressions
+
+The set of REs over an alphabet $\Sigma$ is defined as follows
+
+1.  If $a\in\Sigma$, then $a$ is also an RE denoting the set containing only $a$.
+2.  If $r$ and $s$ are REs, denoting $L(r)$ and $L(s)$, then
+    -   $r|s$ is an RE denoting the union, or alternation, of $L(r)$ and $L(s)$,
+    -   $rs$ is an RE denoting the concatenation of $L(r)$ and $L(s)$, and
+    -   $r^*$ is an RE denoting the Kleene closure of $L(r)$.
+3.  $\epsilon$ is an RE denoting set set containing only the empty string.
+
+## Precedence and Ranges, ...
+
+Order of precendence (from highest):
+
+-   parentheses
+-   closure
+-   concatenation
+-   alternation
+
+Ranges of characters can be specified by the first and the last element connected by an elipsis, "...",
+surrounded with a pair of square brackets, e.g., $[0...9]$.
+
+Complement Operator $\^$
+:   $\^c$ specifies the set $\Sigma - c$ 
+
+Escape Sequences
+:   as in strings, e.g., $\\n$
+
+## Examples
+
+-   identifier in some programming languages
+
+    $([A...Z]|[a...z])([A...Z]|[a...z]|[0...9])^*$
+
+-   unsigned int
+
+    $0|[1...9][0...9]^*$
+
+-   unsigned real numbers
+
+    $(0|[1...9][0...9]^*)(\epsilon|.[0...9]^*)$
+
+-   character strings
+
+    $"(\^")"$
+
+    sometimes using square brackets
+
+    $"[\^"]"$
+
+## Another RE and FA example
+
+-   Java multiline comments RE:
+
+    $/*(\^*|*^+\^/)^**/$
+
+-   Java multiline comments FA:
+
+    ![](img/02/FAjavacomments.png)
+
+<!-- vim:spell spelllang=en: -->

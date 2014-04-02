@@ -2,8 +2,13 @@
 
 SRCS:=	00_Organisatorisches.txt \
 		01_Introduction.txt \
+		02_Scanners.txt \
 
-IMG_SRC=	01/IR.dot
+IMG_SRC=	01/IR.dot \
+			02/FAnew.dot \
+			02/FAnewnotwhile.dot \
+			02/FAposInt.dot \
+			02/FAjavacomments.dot \
 
 GERMAN= #
 
