@@ -6,9 +6,9 @@ import Test.HUnit
 
 -- UnitTests for "new", "not" and "while"
 acceptNew, acceptNot, acceptWhile :: Test
-acceptNew   = TestCase (assertBool "accepting new" $ accept "new")
-acceptNot   = TestCase (assertBool "accepting new" $ accept "not")
-acceptWhile = TestCase (assertBool "accepting new" $ accept "while")
+acceptNew   = TestCase (assertBool "accepting new"   $ accept "new")
+acceptNot   = TestCase (assertBool "accepting not"   $ accept "not")
+acceptWhile = TestCase (assertBool "accepting while" $ accept "while")
 
 tests :: Test
 tests = TestList [ TestLabel "acceptNew"   acceptNew
