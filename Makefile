@@ -3,6 +3,7 @@
 SRCS:=	00_Organisatorisches.txt \
 		01_Introduction.txt \
 		02_Scanners.txt \
+		Leistungsnachweis.txt \
 
 IMG_SRC=	01/IR.dot \
 			02/FAnew.dot \
