@@ -206,4 +206,128 @@ Escape Sequences
 
     ![](img/02/FAjavacomments.png)
 
+# From Regular Expression to Scanner
+
+## Construction Cycle
+
+![](img/02/CycleOfConstructions.png)
+
+## Combining Finite Automata
+
+-   assume we have two FAs:
+
+    ![](img/02/FAn.png) ![](img/02/FAm.png)
+
+-   we can add a transition $\epsilon$ (accepting the empty string) and
+    build a FA for $nm$
+
+    ![](img/02/FAnandm.png)
+
+-   we can simply emliminate the $\epsilon$-transition
+
+    ![](img/02/FAnandm2.png)
+
+## Nondeterministic Finite Automata
+
+-   assume we want to merge
+
+    ![](img/02/FAastar.png) ![](img/02/FAab.png)
+
+-   with an $\epsilon$-transition we get
+
+    ![](img/02/FAastarab.png)
+
+    this is an **NFA**, since there are multiple transitions for
+    a single character 
+
+## Equivalence of NFAs and DFAs
+
+-   NFAs and DFAs are equivalent in their expression power
+
+-   Any NFA can be simulated by a DFA
+
+-   DFA for $a^*ab$ is
+
+    ![](img/02/DFAastarab.png)
+
+    which is in fact the same as for $aa^*b$
+
+## RE to NFA: Thompson's Construction
+
+-   NFAs for $a$ and $b$
+
+    ![](img/02/NFAa.png) ![](img/02/NFAb.png)
+
+-   NFA für $ab$
+
+    ![](img/02/NFAab.png)
+
+-   NFA für $a | b$
+
+    ![](img/02/NFAaorb.png)
+
+-   NFA für $a^*$
+
+    ![](img/02/NFAastar.png)
+
+## Applying Thompson's Construction
+
+to $a (b | c )^*$
+
+![](img/02/NFAabc.png)
+
+## NFA to DFA: The Subset Construction
+
+-   Subset construction takes an NFA
+
+    $(N, \Sigma, \sigma_N, n_0, N_A)$
+
+    and produces a DFA
+
+    $(D, \Sigma, \sigma_D, d_0, D_A)$
+
+## Subset Construction Algorithm
+
+~~~~
+q_0 = epsilonClosure({n_0});
+Q = q_0;
+Worklist = {q_0};
+while (Worklist /= {}) do
+    remove q from Worklist;
+    for each character c elem Sigma do
+        t = epsilonClosure(Delta(q,c));
+        T[q,c] = t;
+        if t not elem Q then
+            add t to Q and to Worklist;
+    end;
+end;
+~~~~
+
+## From Q to D
+
+-   each $q_i \in \mathtt{Q}$ needs a state $d_i \in D$
+
+-   if $q_i$ contains an accepting state of the NFA, then $d_i$ is an accepting state of the DFA
+
+-   $\sigma_D$ can be constructed directly from `T` by observing the mapping from $q_i$ to $d_i$
+
+-   finally the state constructed from $q_0$ becomes $d_0$
+
+## Fixed-Point Computations
+
+-   subset construction is an example of a *fixed-point calculation*
+
+-   a particular style of computation that arises regularly in computer science
+
+-   characterized by the iterated application of a monotone function
+
+-   these computation terminate when they reach a state where further iteration produces
+    the same answer, a **fixed-point**
+
+-   fixed-point computations play an important role in compiler construction
+
+## DFA to Minimal DFA: Hopcroft's Algorithm
+
+... to be continued
+
 <!-- vim:spell spelllang=en: -->

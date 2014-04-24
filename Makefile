@@ -10,6 +10,21 @@ IMG_SRC=	01/IR.dot \
 			02/FAnewnotwhile.dot \
 			02/FAposInt.dot \
 			02/FAjavacomments.dot \
+			02/CycleOfConstructions.dot \
+			02/FAn.dot \
+			02/FAm.dot \
+			02/FAnandm.dot \
+			02/FAnandm2.dot \
+			02/FAastar.dot \
+			02/FAab.dot \
+			02/FAastarab.dot \
+			02/DFAastarab.dot \
+			02/NFAa.dot \
+			02/NFAb.dot \
+			02/NFAab.dot \
+			02/NFAaorb.dot \
+			02/NFAastar.dot \
+			02/NFAabc.dot \
 
 GERMAN= #
 

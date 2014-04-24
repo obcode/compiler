@@ -1,0 +1,7 @@
+digraph finite_state_machine {
+    RE -> NFA[ label = "Thompson's Construction" ];
+    NFA -> DFA [ label = "Subset Construction" ];
+    DFA -> DFA [ label = "DFA Minimization" ];
+    DFA -> RE [ label = "Kleene's Construction" ];
+    DFA -> "Code for a scanner";
+}
