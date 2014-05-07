@@ -303,6 +303,10 @@ while (Worklist /= {}) do
 end;
 ~~~~
 
+## Example
+
+![Taken from Cooper & Torczon, Engineering a Compiler](img/02/subsetconstr.jpg)
+
 ## From Q to D
 
 -   each $q_i \in \mathtt{Q}$ needs a state $d_i \in D$
@@ -328,6 +332,191 @@ end;
 
 ## DFA to Minimal DFA: Hopcroft's Algorithm
 
-... to be continued
+-   DFA from subset construction can have a large number of states
+
+    -   bigger size of recognizer in memory
+
+-   technique to detect when two states are equivalent
+
+-   Hopcroft's Algorithm constructs a set partition
+    $P = \{p_1, p_2, ...p_m\}$ of the DFA states
+
+-   groups together DFA states by their behevior
+
+    if $d_i \stackrel{c}{\mapsto} d_x, d_j \stackrel{c}{\mapsto} d_y$
+    and $d_i, d_j \in p_s$, then $d_x$ and $d_y$ must be in the same
+    set $p_t$
+
+-   each set $p_s\in P$ should be as large as possible
+
+## Hopcroft's Algorithm
+
+~~~~
+T = { D_A, { D - D_A}};
+P = {};
+while (P /= D) do
+    P = T;
+    T = {};
+    for each set p in P do
+        T = T `union` Split(p);
+    end;
+end;
+
+Split(S) {
+    for each c in Sigma do
+        if c splits S into s1 and s2
+            then return {s1,s2};
+    end;
+    return S;
+}
+~~~~
+
+## Example
+
+![Taken from Cooper & Torczon, Engineering a Compiler](img/02/hopcroft.jpg)
+
+## Using a DFA as a Recognizer
+
+-   after turning the minimal DFA into executable code the resulting
+    scanner has to return both
+
+    -   the text of the string and
+    -   its syntactic category
+
+-   in order to recognize words we can put delimiters, like a blank, between them
+
+-   but this means you have to write `2 + 5` instead of `2+5` 
+
+## Change the notion of acceptance
+
+-   the recognizer should find the longest word that matches one of the REs
+
+-   it should run until it reaches a state $s$ without an outgoing transition on the
+    next character
+
+-   if $s$ is an accepting state the scanner should report the word and its category
+
+-   otherwise it should find the most recent accepting state
+
+-   if there is none it should report an error
+
+-   finally there can be several accepting states in the original NFA
+
+    -   e.g. `new` is accepted as keyword and as identifier
+
+    the recognizer must decide which category to return
+
+# Implementing Scanners
+
+## Table-Driven Scanners
+
+-   uses a skeleton scanner for control and
+
+-   a set of generated tables that encode language-specific knowledge
+
+-   the compiler writer provides a set of lexical patterns (REs)
+
+-   the scanner generator produces tables that drive the skeleton scanner
+
+## Example
+
+![Taken from Cooper & Torczon, Engineering a Compiler](img/02/tabledrivenscanner.jpg)
+
+## Avoiding Excess Roll Back
+
+-   consider the RE $ab|(ab)^*c$
+
+-   on the input string $ababababc$ the scanner return the entire string as a single word
+
+-   on the input string $abababab$ it must scan all characters before it can
+    determine that the longest prefix is $ab$
+
+    -   then it reads $ababab$ and recognizes $ab$
+    -   ...
+
+    ⇒ in the worst case: quadratic time
+
+-   the *maximal munch scanner* avoids this behavior with three differences
+
+    1.  it has a global counter for the position in the input stream
+    2.  it has a bit-array for recording dead-end-transitions as the scanner finds
+        them
+    3.  it has an initialization routine that must be called before each next word.
+
+-   it records specific (state, input position)-pairs that cannot lead to an accepting
+    state
+
+## The Maximal Munch Scanner
+
+![Taken from Cooper & Torczon, Engineering a Compiler](img/02/maximalmunchscanner.jpg)
+
+## Direct-Coded Scanners
+
+-   to improve the performance of a table-driven scanner we must reduce
+    the cost of
+
+    -   read a character - operation and/or
+    -   compute the next DFA transition
+
+-   direct-coded scanners reduce the cost of computing DFA transition by
+
+    -   replacing the explicit representation with an implicit one
+    -   and simplifies the two-step, table-lookup computation
+
+## Overhead of table-lookup
+
+-   the table-driven scanner performs two table lookups, one in `CharCat` and
+    another in $\sigma$
+
+-   to access the `i`. element of `CharCat`, the code must compute its address
+    $@\mathtt{CharCat}_0 + i \times w$
+
+    -   $@\mathtt{CharCat}_0$ is a constant related to the starting address of
+        `CharCat` in memory
+
+    -   $w$ is the number of bytes in each element of `CharCat`
+
+-   for $\sigma(state,cat)$ it is
+    $@\sigma_0 + (\mathtt{state} \times \mathtt{number of colums in }\sigma + \mathtt{cat}) \times w$
+
+## Replacing the Table-Driven Scanner's While Loop
+
+-   a direct-coded scanner has a specialized code fragment to implement each state
+
+-   it transfers control directly from state-fragment to state-fragment
+
+-   the scanner generator can directly emit this code
+
+-   but the code violates many of the precepts of structured programming
+
+-   since the code is generated, humans should not need to read or debug it
+
+## Example
+
+for $r[0...9]^+$
+
+![Taken from Cooper & Torczon, Engineering a Compiler](img/02/directcodedscanner.jpg)
+
+## Hand-coded scanners
+
+-   generated scanners use a small, constant amount of time per character
+
+-   but many compilers (commercial and open source) use hand-coded scanners 
+
+-   for example, *flex* was build to support the *gcc* project
+
+-   but *gcc 4.0* uses hand-coded scanners in several front ends
+
+-   hand-coded scanners can reduce the overhead of the interfaces between the
+    scanner and the rest of the system
+
+-   a careful implementation can improve the mechanisms
+
+    -   to read and
+    -   manipulate characters on input
+
+    and the operations
+
+    -   needed to produce a copy of the actual lexeme on output
 
 <!-- vim:spell spelllang=en: -->
