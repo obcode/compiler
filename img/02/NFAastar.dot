@@ -9,5 +9,5 @@ digraph finite_state_machine {
     Si -> Sj [ label = "a" ];
     Sj -> Si [ label = " " ];
     Sj -> Sq;
-    Sq -> Sp;
+    Sp -> Sq;
 }
