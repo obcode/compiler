@@ -1,0 +1,23 @@
+digraph parsetree {
+    size="8,5"
+    node [shape = plaintext];
+    e1 [label = "Expr"];
+    e2 [label = "Expr"];
+    e3 [label = "Expr"];
+    e4 [label = "Expr"];
+    op1 [label = "Op"];
+    op2 [label = "Op"];
+    e1 -> e2;
+    e1 -> op1;
+    e1 -> "<name,c>";
+    e2 -> "(";
+    e2 -> e3;
+    e2 -> ")";
+    e3 -> e4;
+    e3 -> op2;
+    e3 -> "<name,b>"
+    e4 -> "<name,a>"
+    op1 -> "*";
+    op2 -> "+"
+    { rank=same; "(" -> e3 -> ")" [style=invis]}
+}

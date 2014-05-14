@@ -1,0 +1,19 @@
+digraph parsetree {
+    size="8,5"
+    node [shape = plaintext];
+    e1 [label = "Expr"];
+    e2 [label = "Expr"];
+    t1 [label = "Term"];
+    t2 [label = "Term"];
+    t3 [label = "Term"];
+    f1 [label = "Factor"];
+    f2 [label = "Factor"];
+    f3 [label = "Factor"];
+    e1 -> e2 -> t1 -> f1 -> "<name,a>"
+    e1 -> "+"
+    e1 -> t2 -> t3 -> f2 -> "<name,b>"
+    t2 -> "*"
+    t2 -> f3 -> "<name,c>"
+    { rank=same; e2 -> "+" -> t2 [style=invis]}
+    { rank=same; t3 -> "*" -> f3 [style=invis]}
+}

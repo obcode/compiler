@@ -3,6 +3,7 @@
 SRCS:=	00_Organisatorisches.txt \
 		01_Introduction.txt \
 		02_Scanners.txt \
+		03_Parsers.txt \
 		Leistungsnachweis.txt \
 
 IMG_SRC=	01/IR.dot \
@@ -25,6 +26,12 @@ IMG_SRC=	01/IR.dot \
 			02/NFAaorb.dot \
 			02/NFAastar.dot \
 			02/NFAabc.dot \
+			\
+			03/parsetree1.dot \
+			03/parsetree2.dot \
+			03/parsetree3.dot \
+			03/parsetree4.dot \
+			03/parsetree5.dot \
 
 GERMAN= #
 
