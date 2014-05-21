@@ -213,7 +213,7 @@ Using the sequence (0,1,4,6,9,9,3,6,9) gives the tree
 
 -   there are two distinct techniques for constructing top-down parsers
 
-    1.  hand-coded recursive-decent parsers, and
+    1.  hand-coded recursive-descent parsers, and
     2.  generated LL(1) parsers
 
 ## Eliminating left recursion
@@ -268,7 +268,336 @@ $10$           $|$       `num`
 $11$           $|$       `name`
 ---- --------- --------- ----------------------------------
 
+## Backtrack-Free Parser
 
+-   major source of inefficiency of leftmost, top-down parser is backtracking
 
+-   backtracking can be avoided if the parser always selects the correct rule
+
+-   for the grammar on the previous slide, the parser can consider both
+    the focus symbol and the next input symbol, when selecting the next rule
+
+-   the next input symbol is called the **lookahead symbol**
+
+-   using this symbol the parser can disambiguate all of the choices that arise
+    in parsing the right-recursive expression grammar
+
+-   we can say the grammar is **backtrack free** wih the lookahead of one symbol
+
+-   this is also called a **predictive grammar**
+
+## Formalizing the property
+
+... that makes the right-recursive expression grammar backtrack free
+
+-   for each grammar symbol $\alpha$ define $FIRST(\alpha)$ as the set of terminal
+    symbols that can appear as the first word in some string derived from $\alpha$
+
+-   the domain of $FIRST$ is $T\cup NT\cup \{\epsilon, \mathtt{eof}\}$
+
+-   its range is $T\cup\{\epsilon, \mathtt{eof}\}$
+
+-   if $\alpha$ is a terminal symbol, $\epsilon$ or $\mathtt{eof}$, $FIRST(\alpha)$ has
+    exactly one member $\alpha$
+
+-   if $A$ is a nonterminal, $FIRST(A)$ contains the complete set of terminal symbols
+    that can appear as the leading symbol derived from $A$
+
+## An example and a problem
+
+-   consider the following rules as part of a grammar:
+
+    ---- --------- --------- ----------------------------------
+     $2$ *Expr'*   $\mapsto$ + *Term* *Expr'*
+     $3$           $|$       - *Term* *Expr'*
+     $4$           $|$       $\epsilon$
+    ---- --------- --------- ----------------------------------
+
+-   with a lookahead of `+` the parser expands by rule 2 because `+` is in
+    $FIRST(+ Term Expr')$
+
+-   but what is $FIRST(\epsilon)$?
+
+-   the parser should use rule 4 if the lookahead symbol is not a member of the
+    $FIRST$-sets of other rules
+
+-   but it should differentiate between legal inputs and syntax errors
+
+-   therefore, we define the set $FOLLOW(Expr')$ which contains all words that can
+    follow
+
+-   the parser can use rule 4 only if the lookahead symbol is element of
+    $FOLLOW(Expr')$
+
+## Left-Factoring to Eliminate Backtracking
+
+-   Consider the following additions to our expression grammar
+
+    ---- ---------- --------- ------------------------
+    $11$ *Factor*   $\mapsto$ `name`
+    $12$            $|$       `name` [ *ArgList* ]
+    $13$            $|$       `name` ( *ArgList* )
+    $15$ *ArgList*  $\mapsto$ *Expr* *MoreArgs*
+    $16$ *MoreArgs* $\mapsto$ , *Expr* *MoreArgs*
+    $17$            $|$       $\epsilon$ 
+    ---- ---------- --------- ------------------------
+
+-   because productions 11, 12, and 13 all begin with `name`, they have identical
+    $FIRST$ sets
+
+-   with a lookahead of `name` the parser cannot decide which rule to apply
+
+-   with left-factoring we can transform the rules to
+
+    ---- ---------- --------- ------------------------
+    $11$ *Factor*    $\mapsto$ `name` *Arguments*
+    $12$ *Arguments* $|$       [ *ArgList* ]
+    $13$             $|$       ( *ArgList* )
+    $14$             $|$       $\epsilon$ 
+    ---- ---------- --------- ------------------------
+
+-   left-factoring can often eliminate the need to backtrack
+
+-   however, some context-free languages have no backtrack-free grammar
+
+## Top-down recursive-descent parsers
+
+-   backtrack-free grammars lend themselves to simple and efficient parsing
+    with a paradigm called **recursive descent**
+
+-   a recursive-descent parser is structured as a set of mutually recursive
+    procedures, one for each nonterminal in the grammar
+
+-   consider the three rules of our expression grammar
+
+    ---- --------- --------- ----------------------------------
+     $2$ *Expr'*   $\mapsto$ + *Term* *Expr'*
+     $3$           $|$       - *Term* *Expr'*
+     $4$           $|$       $\epsilon$
+    ---- --------- --------- ----------------------------------
+
+-   to recognize instances of *Expr'*, we will create a routine `EPrime()`
+
+    -   choose among these rules based on the $FIRST$ sets
+
+    -   depending on the rule call `NextWord()` and the corresponding procedure
+
+## Table-driven LL(1) Parsers
+
+-   tools can automatically generate efficient top-down parsers for backtrack-free grammars
+
+-   the resulting parsers are called LL(1) parser because
+
+    -   they scan the input from **L**eft to right,
+
+    -   construct a **L**eftmost derivation, and
+
+    -   use a lookahead of **1** symbol
+
+-   grammars that work in an LL(1) scheme are called **LL(1) grammars** and
+    are, by definition, backtrack free
+
+-   the most common implementation technique uses a table-driven skeleton parser
+
+## Bottom-Up Parsing
+
+-   bottom-up parsers build a parse tree starting from its leaves and working towards
+    the root
+
+-   the parser constructs a leaf node for each word returned by the scanner
+
+-   to build a derivation the parsers adds layers of nonterminals on top of the leaves,
+    called the upper frontier
+
+-   the parser looks in the current frontier for a substring that matches the
+    right-hand side of some production $A \mapsto \beta$
+
+-   if it finds $\beta$, it builds a node for $A$ and connects the nodes representing
+    $\beta$ as $A$'s children
+
+-   this is called a **reduction** since it reduces the number of nodes on the frontier
+
+-   the replacement of $\beta$ with $A$ at position $k$ is denoted
+    $\langle A \mapsto \beta, k \rangle$ and is called a **handle**
+
+## Bottom-Up Parsing...
+
+-   the bottom-up parser repeats a simple process
+
+-   it finds a handle $\langle A \mapsto \beta, k \rangle$ on the frontier
+
+-   it replaces the occurrence of $\beta$ at $k$ with $A$
+
+-   this process continues until either
+
+    1.  it reduces the frontier to a single node that represents the grammar's
+        goal symbol, or
+
+    2.  it cannot find a handle.
+
+-   in the first case the parser has found a derivation, and if it has also consumed
+    all the words in the input stream it succeeds
+
+-   in the second case the parser should report a failure
+
+-   in many cases the parser can recover from the error and continue parsing so that
+    it discovers as many syntactic errors as possible in a single parse
+
+## Relationship between derivation and parse
+
+-   the bottom-up parser works from the final sentence toward the goal symbol
+
+-   the derivation starts at the goal symbol and works toward the final sentence
+
+-   the parser discovers the steps of the derivation in reverse order
+
+-   the scanner returns classified words in left-to-right order
+
+-   a bottom-up parser then looks for the rightmost derivation
+
+-   for a derivation:
+
+    $Goal = \gamma_0 \mapsto \gamma_1 \mapsto \gamma_2 \mapsto ... \mapsto \gamma_{n-1} \mapsto \gamma_n = sentence$
+
+    the parser discovers $\gamma_i \mapsto \gamma_{i+1}$ before it discovers
+    $\gamma_{i-1} \mapsto \gamma_i$
+
+## LR(1) Parser
+
+-   with an unambiguous grammar, the rightmost derivation is unique
+
+-   for a large class of unambiguous grammars, $\gamma_{i-1}$ can be determined
+    directly from $\gamma_i$ and a limited amount of lookahead
+
+-   for such grammars, we can construct an efficient handle-finder, using a technique
+    called LR parsing
+
+-   an LR(1) parser scans the input from left to right to build a rightmost derivation
+    in reverse
+
+-   the name LR(1) comes from
+
+    -   **L**eft-to-right scan,
+
+    -   **R**everse rightmost derivation, and
+
+    -   **1** symbol of lookahead.
+
+# Practical Parsing Issues
+
+## Error Recovery
+
+-   a parser should find as many syntax errors as possible in each compilation
+
+-   this requires a mechanism that lets the parser recover from an error by moving
+    to a state where it can continue parsing
+
+-   a common way is to select one or more words that the parser can use to
+    synchronize the input with its internal state
+
+-   when the parser encounters an error, it discards input symbols until it finds
+    such a synchronization word
+
+## Finding Semicolons
+
+-   in languages with semicolons as statement separators it calls the scanner
+    repeatedly until it finds a semicolon and then changes its state to one that
+    would have resulted from successful recognition of a complete statement
+
+-   in a recursive-descent parser, the code can simply discard words until it finds
+    a semicolon
+
+-   in an LR(1) parser this is more complex
+
+-   in table-driven parsers the compiler needs a way of telling the parser generator
+    where to synchronize
+
+    -   this can be done using error productions --- a production whose right-hand side
+        includes a reserved word that indicates a error synchronization point and
+        one or more synchronizing tokens
+
+## Unary Operators
+
+-   adding unary operators to the expression grammar requires some care
+
+-   consider adding a unary absolute-value operator $||$ with higher precedence
+    than binary operators and lower precedence than parentheses
+
+    ---- --------- --------- ----------------------------------
+     $0$ *Goal*    $\mapsto$ *Expr*
+     $1$ *Expr*    $\mapsto$ *Expr* + *Term*
+     $2$           $|$       *Expr* - *Term*
+     $3$           $|$       *Term*
+     $4$ *Term*    $\mapsto$ *Term* * *Factor*
+     $5$           $|$       *Term* / *Factor*
+     $6$           $|$       *Value*
+     $7$ *Value*   $\mapsto$ $||$ *Factor*
+     $8$           $|$       *Factor*
+     $9$ Factor    $\mapsto$ ( *Expr* )
+    $10$           $|$       `num`
+    $11$           $|$       `name`
+    ---- --------- --------- ----------------------------------
+
+-   this grammar does not allow the programmer to write $||\,||x$
+
+## Handling Context-Sensitive Ambiguity
+
+-   using one word to represent different meanings can create a syntactic ambiguity
+
+-   one example arose in several early programming languages, including Fortran, PL/I,
+    and Ada
+
+-   these languages used parentheses for both
+
+    -   subscript expressions of an array reference, and
+
+    -   argument lists of subroutines and functions
+
+-   given a textual reference, such as `foo(i,j)`, the compiler cannot tell if
+    `foo` is a two-dimensional array or a procedure
+
+-   the scanner undoubtedly classified `foo` as a `name`
+
+## Two different approaches to solve this problem
+
+1.  rewrite the grammar to combine both the function invocation and the array
+    reference into a single production
+
+    -   the issue is then deferred until a later step in translation
+
+    -   it can then be resolved with information from declarations
+
+    -   the parser must construct a representation that preserves all information
+        needed
+
+    -   the later step will rewrite the reference
+
+2.  the scanner can classify identifiers based on their declared types
+
+    -   requires some hand-shaking between the scanner and the parser
+
+    -   it's not hard as long as the language has a define-before-use rule
+
+    -   the declaration is parsed before the use occurs
+
+    -   the parser can make its internal symbol table available to the scanner
+        to resolve identifiers in different classes, such as `variable-name` and
+        `function-name`
+
+## Left versus Right Recursion
+
+-   top-down parsers need right recursive grammars, but bottom-up parsers can work
+    with both left and right recursive grammars
+
+-   thus, the compiler writer must choose
+
+-   several factors play into this decision
+
+    Stack Depth
+    :   in general left recursion can lead to smaller stack depths
+
+    Associativity
+    :   left recursion naturally produces left associativity, right recursion right
+        associativity
 
 <!-- vim:spell spelllang=en: -->
