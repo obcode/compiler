@@ -4,9 +4,11 @@ SRCS:=	00_Organisatorisches.txt \
 		01_Introduction.txt \
 		02_Scanners.txt \
 		03_Parsers.txt \
+		04_Zwischenrepraesentationen.txt \
 		Leistungsnachweis.txt \
 
 IMG_SRC=	01/IR.dot \
+			\
 			02/FAnew.dot \
 			02/FAnewnotwhile.dot \
 			02/FAposInt.dot \
@@ -32,11 +34,17 @@ IMG_SRC=	01/IR.dot \
 			03/parsetree3.dot \
 			03/parsetree4.dot \
 			03/parsetree5.dot \
-
-GERMAN= #
+			\
+			04/IR.dot \
+			04/Parsebaum.dot \
+			04/AST.dot \
+			04/DAG.dot \
+			04/while.dot \
+			04/ifthenelse.dot \
+			04/dg.dot \
 
 LECTURE_NAME:=	compiler
-SEMESTER:=	summer term 2014
+SEMESTER:=	Sommersemester 2014
 
 GITHUB=	YES
 

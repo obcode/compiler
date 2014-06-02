@@ -1,0 +1,438 @@
+% Compiler  
+  --- Zwischenrepräsentationen ---
+% Prof. Dr. Oliver Braun
+% SS 2014
+
+## Eine Taxonomie von Zwischenrepräsentationen
+
+Zwischenrepräsentationen (*Intermediate Representations (IR)*) können strukturell in drei Kategorien
+eingeteilt werden:
+
+Graphische IRs
+:   Interne Darstellung als Graph. Die Algorithmen des Compilers werden durch ausgedrückt.
+
+Lineare IRs
+:   Pseudocode für eine abstrakte Maschine. Die Algorithmen iterieren über einfache lineare Sequenzen von
+	Operationen.
+
+Hybride IRs
+:   Kombinieren beide Ansätze, z.B. eine lov-Level lineare IR für Code-Blöcke und ein Graph der den
+	Kontrollfluß zwischen den Blöcken ausdrückt.
+
+## Abstraktionsebene
+
+-	gegeben sei der Array-Zugriff auf ein zweidimensionales Array: `A[i,j]`
+
+-	eine baumartige Zwischenrepräsentation nah an der Quellsprache:
+
+	![](img/04/IR.png)
+
+-	linearer Pseudocode nah an der Zielsprache
+
+	~~~~
+	subI  ri, 1  => r1
+	multI r1, 10 => r2
+	subI  rj, 1  => r3
+	add   r2, r3 => r4
+	multI r4, 4  => r5
+	loadI @A     => r6
+	add   r5, r6 => r7
+	load  r7     => rAij
+	~~~~
+
+# Graphische IRs
+
+## Syntax-basierte Bäume
+
+## Parse-Bäume
+
+-   repräsentieren die komplette Herleitung
+
+-   Parsebaum für `a * 2 + a * 2 * b`
+
+    ![](img/04/Parsebaum.png)
+
+## Abstrakte Syntax-Bäume *(abstract syntax trees (AST))*
+
+-   bewahren die wesentliche Struktur der Parsebäume
+
+-   aber entfernen die überflüssigen Knoten
+
+-   AST für `a * 2 + a * 2 * b`
+
+    ![](img/04/AST.png)
+
+-   ASTs werden in vielen Compiler-Systemen genutzt
+
+    -   Source-To-Souce Systems
+
+    -   syntax-gesteuerte Editoren
+
+    -   automatische Parallelisierungs-Tools
+
+## Gerichtete kreisfreie Graphen *(directed acyclic graphs (DAGs))*
+
+-   ein DAG vermeidet doppelte Teilbäume die im AST vorkommen können durch
+    **Sharing**
+
+-   DAG für `a * 2 + a * 2 * b`
+
+    ![](img/04/DAG.png)
+
+-   durch die kompaktere Darstellung muss `a * 2` nur einmal berechnet werden
+
+-   ABER: Das funktioniert nur wenn sich die Werte (hier: `a`) nicht verändern können
+
+# Graphen
+
+## Kontroll-Fluß-Graphen *(control-flow graphs (CFGs))*
+
+-   ein CFG modelliert den Kontrollfluß in einem Programm
+
+-   ein CFG ist ein gerichteter Graph $G = (N,E)$
+
+    -   jeder Knoten $n\in N$ repräsentiert einen Grundblock (sequenzieller Code ohne
+        Verzweigungen)
+
+    -   jede Kante $e = (n_i,n_j) \in E$ korrespondiert zu einem möglichen
+        Kontrollübergang von $n_i$ zu $n_j$
+
+## Beispiel: `while`-Schleife
+
+    while (<expression>)
+        <statement>
+    <nextStatement>
+
+![](img/04/while.png)
+
+## Beispiel: `if-then-else`
+
+    if (<expression>)
+        then <thenStatement>
+        else <elseStatement>
+    <nextStatement>
+
+![](img/04/ifthenelse.png)
+
+## Abhängigkeitsgraph *(dependence graph)*
+
+-   Abhängigkeiten zwischen Definition und Nutzung eines Wertes
+
+-   wie sieht der data-dependence graph zu folgendem Code aus?
+
+    ~~~~ {.java .numberLines}
+    int x = 0;
+    int i = 1;
+    while (i < 100) {
+        if (a[i] > 0)
+            x += a[i];
+        i++;
+    }
+    System.out.println(x);
+    ~~~~
+
+## Data-Dependence Graph
+
+![](img/04/dg.png)
+
+## Aufruf-Graphen *(call graph)*
+
+-   für interprozedurale Analyse und Optimierung
+
+-   Knoten für jede Prozedur
+
+-   Kante für jeden Prozeduraufruf
+
+-   Probleme
+
+    -   getrennte Compilierung
+
+    -   Funktionen höherer Ordnung
+
+        -   bei jedem Aufruf kann eine andere Funktion übergeben werden
+
+    -   Vererbung
+
+## Lineare IRs
+
+-   i.d.R. Assembler-Code für eine abstrakte Maschine
+
+-   viele frühe Compiler nutzten lineare IRs
+
+-   lineare IRs haben eine implizite Ordnung
+
+    -   Abhängigkeitsgraphen haben eine partielle Ordnung die mehrere Ausführungs-
+        reihenfolgen zulässt
+
+-   in einem Compiler muss eine lineare IR einen Mechanismus beinhalten, der den
+    Kontrollfluß beschreibt
+
+    -   z.B. Blöcke und Sprünge
+
+## Stack-Maschine
+
+-   Ein-Adress-Maschine
+
+-   Beispiel
+
+        push 2
+        push b
+        multiply
+        push a
+        subtract
+
+-   kompakter, einfach zu generierender und auszuführender Code
+
+-   Smalltalk 80 nd Java nutzen einen Bytecode der einer Stack-Maschine entspricht
+
+## Drei-Adress-Code
+
+-   Operationen haben in der Regel die Form
+
+        i <- j op k
+
+-   Beispiel
+
+        t1 <- 2
+        t2 <- b
+        t3 <- t1 * t2
+        t4 <- a
+        t5 <- t4 - t3
+
+## Repräsentation von IRs
+
+-   ein Compiler verbringt die meiste Zeit mit der Manipulation der IR
+
+-   Drei-Adress-Codes werden oft als Menge von Quadrupeln repräsentiert
+
+-   drei verschiedene Repräsenationen
+
+1.  ein einfaches Array für jeden Block
+
+    -   in Kontrollflußgraphen oft in jedem Knoten
+
+2.  Array von Zeigern auf die Quadrupel
+
+3.  Quadrupel als Knoten in einer verketteten Liste
+
+## Temporäre Variablen benennen
+
+-   in einer IR sind i.d.R. mehr Details als in der Quellsprache
+
+-   je nach IR muss der Compiler Bezeichner generieren
+
+-   Gegeben sei der Code
+
+    ~~~~ {.java}
+    a = b + c;
+    b = a - d;
+    c = b + c;
+    d = a - d;
+    ~~~~
+
+## Quellcode-Namen *(source names)*
+
+-   temporäre Namen orientieren sich am Quellcode
+
+-   d.h. wann immer im Quellcode gleiche Namen auftauchen werden die generierten
+    Namen wieder verwendet
+
+-   Beispiel
+
+    ~~~~ 
+    t1 <- b
+    t2 <- c
+    t3 <- t1 + t2
+    a  <- t3
+    t4 <- d
+    t1 <- t3 - t4
+    b  <- t1
+    t2 <- t1 + t2
+    c  <- t2
+    t4 <- t3 - t4
+    d  <- t4
+    ~~~~ 
+
+## Wertabhängige Namen *(value names)*
+
+-   Namen sind abhängig von den Werten, die sie repräsentieren
+
+-   Beispiel
+
+    ~~~~ 
+    t1 <- b
+    t2 <- c
+    t3 <- t1 + t2
+    a  <- t3
+    t4 <- d
+    t5 <- t3 - t4
+    b  <- t5
+    t6 <- t5 + t2
+    c  <- t6
+    t5 <- t3 - t4
+    d  <- t5
+    ~~~~ 
+
+-   das Beispiel zeigt, dass `b` und `d` der selbe Wert und `a` und `c` verschiedene
+    Werte zugewiesen bekommen
+
+## Static Single Assignment Form (SSA)
+
+-   wird in modernen Compilern verwendet
+
+-   jeder Name wird durch genau eine Operation definiert,
+    daher der Name *single static assigment*
+
+-   ein Programm ist in SSA-Form, wenn
+
+    1.  jede Definition (Zuweisung) einen eindeutigen Namen hat und
+
+    2.  jede Nutzung auf eine eindeutige Definition verweist.
+
+-   um ein Programm in SSA-Form umzuwandeln, führt der Compiler sog. $\Phi$- Funktionen
+    an den Stellen ein, an denen verschiedene Kontrollflußpfade zusammen laufen
+
+## Beispiel
+
+-   ursprünglicher Code
+
+    ~~~~
+    x = ...;
+    y = ...;
+    while (x < 100) {
+        x += 1;
+        y += x;
+    }
+    ~~~~
+
+-   SSA-Form
+
+    ~~~~
+          x0 <- ...
+          y0 <- ...
+          if (x0 >= 100) goto next
+    loop: x1 <- Phi(x0,x2)
+          y1 <- Phi(y0,y2)
+          x2 <- x1 + 1
+          y2 <- y1 + x2
+          if (x2 < 100) goto loop
+    next: x3 <- Phi(x0,x2)
+          y3 <- Phi(y0,y2)
+    ~~~~
+
+## Die $\Phi$-Funktion
+
+-   das Beispiel zeigt unmittelbar nach `loop` zwei $\Phi$-Aufrufe bei der jeweils ein
+    Argument noch gar nicht definiert ist
+
+-   die $\Phi$-Funktion arbeitet jedoch so, dass sie nur ein Argument liest
+
+-   dieses Argument korrespondiert mit der zuletzt gewählten Kante im
+    Kontrollflußgraph, kann also nicht undefiniert sein
+
+-   die $\Phi$-Funktion kann eine beliebige Anzahl von Parametern haben
+
+## Speichermodelle
+
+-   der Compiler muss für jeden Wert im Code entscheiden ob er in einem Register oder
+    im Hauptspeicher liegen soll
+
+-   für den ausführbaren Code muss sogar klar sein, ob der Wert z.B. in Register `r13`
+    oder in den ersten 16 Byte des Labels `L0089` steht
+
+-   bis kurz vor der Code-Generierung kann der Compiler natürlich symbolische
+    Adressen verwenden
+
+-   im Wesentlichen gibt es zwei Speichermodelle die Verwendung finden
+
+## Register-to-Register-Modell
+
+-   der Compiler nutzt für alles Register
+
+-   unabhängig von den tatsächlichen, physikalischen Einschränkungen
+
+-   Werte werden nur dann in den Hauptspeicher geschrieben, wenn die Semantik
+    des Programms dies erfordert
+
+    -   z.B. bei einem Prozeduraufruf wenn ein Parameter "by reference" übergeben wird
+
+## Memory-to-Memory-Modell
+
+-   der Compiler geht davon aus, dass alle Werte im Hauptspeicher gehalten werden
+
+-   die Werte müssen vor der Benutzung in Register und nach der Definition
+    in den Hauptspeicher verschoben werden
+
+-   es reicht dann eine sehr kleine Anzahl von Registernamen in der IR
+
+-   oft werden in der IR memory-to-memory-Operationen verwendet
+
+## Auswahl eines Speichermodells
+
+-   die Auswahl des Speichermodells ist meist orthogonal zur Auswahl der IR
+
+-   aber es hat einen Einfluss auf den Rest des Compilers
+
+-   bei einem Register-to-Register-Modell nutzt der Compiler i.d.R. mehr Register
+    als tatsächlich vorhanden sind
+
+    -   der Register-Allokator muss dann eine Menge von virtuellen Registern auf die
+        physikalischen Register abbilden
+
+-   bei einem Memory-to-Memory-Modell werden üblicherweise viel weniger Register
+    genutzt wie in einer modernen Hardware vorhanden sind
+
+    -   der Register-Allokator sucht dann nach im Hauptspeicher gehaltenen Werten,
+        die über einen längeren Zeitraum in ein Register geschrieben werden können
+
+## Symboltabellen
+
+-   während der Übersetzung sammelt ein Compiler verschiedene Informationen,
+    die er an anderer Stelle wieder benötigt, z.B.
+
+    -   Variablen mit Datentyp, Speicherklasse und Name
+
+    -   Arrays mit Dimensionen, untere und obere Grenze für jede Dimension
+
+-   der Compiler kann diese Informationen wenn er Sie benötigt immer wieder berechnen
+
+-   oder sie beim ersten Auftreten speichern
+
+    -   in der IR ⇒ aufwändig wieder zu finden 
+
+    -   extra in einer Symboltabelle
+
+## Beispiel: Erweiterung des Haskell-Mardown-to-HTML-Compiler
+
+-   um Referenzlinks verarbeiten zu können, hilft eine Symboltabelle
+
+~~~~ {.haskell}
+import Data.Map as M
+
+type Id         = String
+type Url        = String
+type References = Map Id Url
+
+parse :: [MDToken] -> Maybe (AST, References)
+parse [] = Just (Sequence [], M.empty)
+parse ... =
+  let id  = -- ... berechne id
+      url = -- ... berechne url
+  in maybe Nothing
+           (\(ast,refs) ->
+                Just (ast, M.insert id url refs))
+           $ parse rest
+
+generateHTML' :: (AST, References) -> String
+generateHTML' (Sequence (refLink:rest), refs) =
+  let linkId = -- ... hole Link-ID
+      ref = M.lookup linkId refs
+  in (case ref of
+        Nothing  -> ""
+        Just url -> "<a href=\"" ++ url
+                    ++ "\">" ...
+     ) ++ generateHTML' (Sequence rest, refs)
+~~~~
+
+
+<!-- vim:spell spelllang=de: -->

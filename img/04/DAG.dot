@@ -1,0 +1,10 @@
+digraph DAG {
+    size="8,5"
+    node [shape = plaintext];
+    mal1 [label = "*"];
+    mal2 [label = "*"];
+    "+" -> mal1 -> "a"
+    mal1 -> "2"
+    "+" -> mal2 -> mal1
+    mal2 -> "b"
+}
