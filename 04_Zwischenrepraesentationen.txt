@@ -406,33 +406,91 @@ Hybride IRs
 
 -   um Referenzlinks verarbeiten zu können, hilft eine Symboltabelle
 
-~~~~ {.haskell}
-import Data.Map as M
+-   wir nutzen in Haskell eine `Map`
 
-type Id         = String
-type Url        = String
-type References = Map Id Url
+    ~~~~ {.haskell}
+    import Data.Map as M
+    
+    type Id         = String
+    type Url        = String
+    type References = Map Id Url
+    ~~~~
 
-parse :: [MDToken] -> Maybe (AST, References)
-parse [] = Just (Sequence [], M.empty)
-parse ... =
-  let id  = -- ... berechne id
-      url = -- ... berechne url
-  in maybe Nothing
+## ... Parsen
+
+-   neben einem Abstrakten-Syntax-Baum wird die `Map` mit den Referenzen
+    berechnet
+
+    ~~~~ {.haskell}
+    parse :: [MDToken]
+          -> Maybe (AST, References)
+    parse [] = Just (Sequence [], M.empty)
+    parse ... =
+      let id  = -- ... berechne id
+          url = -- ... berechne url
+      in maybe Nothing
            (\(ast,refs) ->
-                Just (ast, M.insert id url refs))
+             Just (ast, M.insert id url refs))
            $ parse rest
+    ~~~~
 
-generateHTML' :: (AST, References) -> String
-generateHTML' (Sequence (refLink:rest), refs) =
-  let linkId = -- ... hole Link-ID
-      ref = M.lookup linkId refs
-  in (case ref of
-        Nothing  -> ""
-        Just url -> "<a href=\"" ++ url
-                    ++ "\">" ...
-     ) ++ generateHTML' (Sequence rest, refs)
-~~~~
+-   Achtung: In jeder Definition der `parse`-Funktion muss das nun angepasst werden
+    (der Haskell-Compiler sagt Ihnen wo)
 
+## ... HTML generieren
+
+-   beim HTML generieren wird zur ID im AST die URL aus der `Map` geholt
+
+    ~~~~ {.haskell}
+    generateHTML' :: (AST, References)
+                  -> String
+    generateHTML' (Sequence (ref:rest), refs) =
+      let linkId = -- ... hole Link-ID aus ref
+          ref = M.lookup linkId refs
+      in (case ref of
+            Nothing  -> ""
+            Just url -> "<a href=\"" ++ url
+                        ++ "\">" ...
+         )
+         ++ generateHTML' (Sequence rest, refs)
+    ~~~~
+
+-   Achtung: Die `generateHTML`-Funktionen bekommen jetzt neben dem AST immer die
+    Referenz-Map
+
+## Verschachtelte Gültigkeitsbereiche
+
+-   viele Programmiersprachen haben die Möglichkeit Variablen lokal in einem
+    Gültigkeitsbereich (*scope*) zu definieren
+
+-   bei verschachtelten Gültigkeitsbereichen (*nested scopes*) könnte die Variable
+    auf die zugegriffen wird in jedem der umschließenden Gültigkeitsbereiche
+    definiert worden sein
+
+-   für jeden lexikalischen Scope eine eigene Symboltabelle
+
+-   bei einem `lookup` muss *von innen nach außen* gesucht werden
+
+## Verlinkte Tabellen für Namensauflösung in OO
+
+-   in einer objektorientierten Sprache gibt es neben den lexikalischen
+    Gültigkeitsbereichen eine Vererbungshierarchie in der gesucht werden muss
+
+-   eine einfache Implementierung hat eine Symboltabelle für jede Klasse mit
+    zwei verschachtelten Hierarchien
+
+    -   eine für lexikalisches Scoping innerhalb von Methoden und
+
+    -   die andere die der Vererbungshierarchie für jede Klasse folgt
+
+## Namensauflösung in OO
+
+-   um einen Namen `foo` aufzulösen
+
+    -   wird erst in der lexikalischen Tabelle gesucht
+
+    -   dann in der Klasse und ihren Oberklassen
+
+    -   und schließlich in der globalen Tabelle
 
 <!-- vim:spell spelllang=de: -->
