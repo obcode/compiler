@@ -1,5 +1,5 @@
 digraph dg {
-    size="8,5"
+    size="3,3"
     node [shape = plaintext];
 	1 -> 5
 	2 -> 3

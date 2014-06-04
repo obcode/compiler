@@ -1,4 +1,5 @@
 digraph IR {
+    size="3,3"
 	x1 [label = "*"]
 	x3 [label = "*"]
 	x2 [label = "*"]

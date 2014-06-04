@@ -1,5 +1,5 @@
 digraph parsetree {
-    size="8,5"
+    size="5,5"
     node [shape = plaintext];
     s1 [label = "Statement"];
     s2 [label = "Statement"];

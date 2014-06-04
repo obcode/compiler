@@ -1,5 +1,5 @@
 digraph DAG {
-    size="8,5"
+    size="3,3"
     node [shape = plaintext];
     mal1 [label = "*"];
     mal2 [label = "*"];

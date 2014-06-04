@@ -1,4 +1,5 @@
 digraph IR {
+    size="2,2"
     subscript -> A;
     subscript -> i;
     subscript -> j;

@@ -107,7 +107,6 @@
 -   beginning with the start symbol *Expr* we can generate the sentence $(a+b)*c$
 	using **rightmost derivation** by the rewrite sequence (2,6,1,2,4,3) 
 
-    <!-- http://mshang.ca/syntree/ -->
     ![parse tree of  $(a+b)*c$](img/03/parsetree1.png)
 
 -   **leftmost derivation** uses the sequence (2,1,2,3,4,6) and, obviously, results

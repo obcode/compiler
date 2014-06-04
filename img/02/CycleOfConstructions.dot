@@ -1,4 +1,5 @@
 digraph finite_state_machine {
+    size="2,2"
     RE -> NFA[ label = "Thompson's Construction" ];
     NFA -> DFA [ label = "Subset Construction" ];
     DFA -> DFA [ label = "DFA Minimization" ];

@@ -188,14 +188,6 @@ Escape Sequences
 
     $(0|[1...9][0...9]^*)(\epsilon|.[0...9]^*)$
 
--   character strings
-
-    $"(\^")^*"$
-
-    sometimes using square brackets
-
-    $"[\^"]^*"$
-
 ## Another RE and FA example
 
 -   Java multiline comments RE:
