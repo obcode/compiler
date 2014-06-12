@@ -171,7 +171,7 @@ Hybride IRs
 
 ## Stack-Maschine
 
--   Ein-Adress-Maschine
+-   Null- und Ein-Adress-Code (Null-Adress-Maschine)
 
 -   Beispiel
 
@@ -413,7 +413,7 @@ Hybride IRs
     
     type Id         = String
     type Url        = String
-    type References = Map Id Url
+    type References = M.Map Id Url
     ~~~~
 
 ## ... Parsen
