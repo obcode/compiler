@@ -9,7 +9,7 @@ Zwischenrepräsentationen (*Intermediate Representations (IR)*) können struktur
 eingeteilt werden:
 
 Graphische IRs
-:   Interne Darstellung als Graph. Die Algorithmen des Compilers werden durch ausgedrückt.
+:   Interne Darstellung als Graph. Die Algorithmen des Compilers werden durch Graphenalgorithmen ausgedrückt.
 
 Lineare IRs
 :   Pseudocode für eine abstrakte Maschine. Die Algorithmen iterieren über einfache lineare Sequenzen von
@@ -171,7 +171,7 @@ Hybride IRs
 
 ## Stack-Maschine
 
--   Null- und Ein-Adress-Code (Null-Adress-Maschine)
+-   Spezialform von Ein-Adress-Code (Null-Adress-Maschine)
 
 -   Beispiel
 
@@ -183,7 +183,7 @@ Hybride IRs
 
 -   kompakter, einfach zu generierender und auszuführender Code
 
--   Smalltalk 80 nd Java nutzen einen Bytecode der einer Stack-Maschine entspricht
+-   Smalltalk 80 und Java nutzen einen Bytecode der einer Stack-Maschine entspricht
 
 ## Drei-Adress-Code
 
