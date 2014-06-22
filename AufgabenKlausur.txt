@@ -1,0 +1,97 @@
+% Beispiele für Klausuraufgaben
+% Compiler
+% Prof. Dr. Oliver Braun
+
+1.  Gegeben sei folgende Haskell-Implementierung eines endlichen Automats:
+
+    ~~~~ {.haskell}
+    import Data.Char ( isDigit )
+
+    data State = S0 | S1 | S2 | S3 | Serror
+        deriving (Eq, Show)
+
+    sigma :: State -> Char -> State
+    sigma S0 '-' = S1
+    sigma S0 '0' = S2
+    sigma S0 c
+        | isDigit c = S3
+        | otherwise = Serror
+    sigma S1 '0' = S3
+    sigma S1 c
+        | isDigit c = S3
+        | otherwise = Serror
+    sigma S3 c
+        | isDigit c = S3
+        | otherwise = Serror
+    sigma _  _   = Serror
+
+    start :: State
+    start = S0
+
+    sAccept :: [State]
+    sAccept = [S2, S3]
+    ~~~~
+
+    a.  Geben Sie den endlichen Automat als 5-Tupel an.
+
+    b.  Geben Sie das Zustandsübergangsdiagramm für den endlichen Automaten an.
+
+    c.  Geben Sie einen regulären Ausdruck an, der dem endlichen Automaten entspricht.
+
+2.  Gegeben sei folgender Code einer c-ähnlichen Programmiersprache:
+
+    ~~~~ {.java}
+    if (a == b) {
+        print("beide gleich");
+    } else {
+        print("beide verschieden");
+    }
+    ~~~~
+
+    a.  Geben Sie mögiche Token bzw. den Token-Strom an, denn ein Scanner hier erkennen müsste.
+        Sie können die Token entweder als Haskell-Token oder als Tupel bestehend aus dem Token und der
+        syntaktischen Kategorie angeben, also z.B. entweder `If` oder `(if, Schlüsselwort)`.
+
+    b.  Beschreiben Sie was der Parser mit dem Tokenstrom macht und geben Sie den resultierenden
+        abstrakten Syntaxbaum an.
+
+    c.  Geben Sie den Teil einer `parse`-Funktion in Haskell an, der die Struktur des `if-else` erkennt und daraus
+        einen AST erzeugt. Sie können davon ausgehen, dass alles andere bereits implementiert ist und der
+        AST-Datentyp so aussieht wie Sie es haben wollen. Das alles brauchen Sie nicht angeben.
+
+3.  Geben Sie den Kontrollflussgraphen für folgendes Code-Stück an:
+
+    ~~~~ {.haskell}
+    ...
+    ~~~~
+
+4.  Geben Sie den Data-Dependence Graph für folgendes Code-Stück an:
+
+    ~~~~ {.haskell}
+    ...
+    ~~~~
+
+5.  Wandeln Sie den folgenden Parse-Baum in einen abstrakten Syntax-Baum um:
+
+    ...
+
+    Wandeln Sie den resultierenden abstrakten Syntax-Baum in einen DAG um:
+
+    ...
+
+6.  
+
+    a)  Geben Sie einen RE für ... an.
+
+    b)  Erzeugen Sie daraus mittels Thompsons Konstruktion einen NFA.
+
+    c)  Wandeln Sie den NFA mit der Teilmengen Konstruktion in einen DFA um.
+
+    d)  Minimieren Sie den DFA mit Hilfe von Hopcrofts Algorithmus. (Sie können das Verfahren aus
+        "Theoretische Informatik" anwenden).
+
+7.  Wie könnte das folgende Code-Stück durch einen Compiler optimiert werden?
+
+8.  Was ist eine Symboltabelle und wofür wird sie benötigt.
+
+...

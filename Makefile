@@ -5,7 +5,9 @@ SRCS:=	00_Organisatorisches.txt \
 		02_Scanners.txt \
 		03_Parsers.txt \
 		04_Zwischenrepraesentationen.txt \
+		05_Optimierungstechniken.txt \
 		Leistungsnachweis.txt \
+		AufgabenKlausur.txt \
 
 IMG_SRC=	01/IR.dot \
 			\
