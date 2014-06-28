@@ -55,10 +55,6 @@
     b.  Beschreiben Sie was der Parser mit dem Tokenstrom macht und geben Sie den resultierenden
         abstrakten Syntaxbaum an.
 
-    c.  Geben Sie den Teil einer `parse`-Funktion in Haskell an, der die Struktur des `if-else` erkennt und daraus
-        einen AST erzeugt. Sie können davon ausgehen, dass alles andere bereits implementiert ist und der
-        AST-Datentyp so aussieht wie Sie es haben wollen. Das alles brauchen Sie nicht angeben.
-
 3.  Geben Sie den Kontrollflussgraphen für folgendes Code-Stück an:
 
     ~~~~ {.haskell}
