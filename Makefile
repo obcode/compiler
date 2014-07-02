@@ -6,6 +6,7 @@ SRCS:=	00_Organisatorisches.txt \
 		03_Parsers.txt \
 		04_Zwischenrepraesentationen.txt \
 		05_Optimierungstechniken.txt \
+		go.txt \
 		Leistungsnachweis.txt \
 		AufgabenKlausur.txt \
 
