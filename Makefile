@@ -1,14 +1,14 @@
 # (c) 2014 Oliver Braun
 
 SRCS:=	00_Organisatorisches.txt \
-		01_Introduction.txt \
+		01_Einfuehrung.txt \
 		02_Scanners.txt \
 		03_Parsers.txt \
 		04_Zwischenrepraesentationen.txt \
 		05_Optimierungstechniken.txt \
-		go.txt \
-		Leistungsnachweis.txt \
-		AufgabenKlausur.txt \
+#		go.txt \
+#		Leistungsnachweis.txt \
+#		AufgabenKlausur.txt \
 
 IMG_SRC=	01/IR.dot \
 			\
