@@ -2,8 +2,8 @@
 
 SRCS:=	00_Organisatorisches.txt \
 		01_Einfuehrung.txt \
-		02_Scanners.txt \
-		03_Parsers.txt \
+		02_Scanner.txt \
+		03_Parser.txt \
 		04_Zwischenrepraesentationen.txt \
 		05_Optimierungstechniken.txt \
 #		go.txt \
