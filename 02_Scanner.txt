@@ -206,7 +206,7 @@ Escape Sequenzen
 
     $(0|[1...9][0...9]^*)(\epsilon|.[0...9]^*)$
 
-## Ein weiteres RE und EA Beispeil
+## Ein weiteres RE und EA Beispiel
 
 -   Mehrzeilige Kommentare in Java RE:
 
