@@ -372,7 +372,7 @@ end;
 ~~~~
 T = { D_A, { D - D_A}};
 P = {};
-while (P /= D) do
+while (P /= T) do
     P = T;
     T = {};
     for each set p in P do
