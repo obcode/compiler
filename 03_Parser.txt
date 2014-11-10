@@ -417,87 +417,88 @@ $11$           $|$       `name`
 -   in vielen Fällen kann der Parser aber trotz Fehler weiter machen
     (error recovery) und so in einem Lauf möglichst viele Fehler finden
 
-TODO: Übersetzen ab hier
+## Beziehung zwischen dem Parsen und der Herleitung
 
-## Relationship between derivation and parse
+-   der Bottom-Up Parser arbeitet vom fertigen Satz zum Startsymbol
 
--   the bottom-up parser works from the final sentence toward the goal symbol
+-   die Herleitung beginnt mit dem Startsymbol un arbeitet bis zum fertigen Satz
 
--   the derivation starts at the goal symbol and works toward the final sentence
+-   der Parser findet die Herleitung also rückwärts
 
--   the parser discovers the steps of the derivation in reverse order
+-   der Scanner ermittelt die Wörter von links nach rechts
 
--   the scanner returns classified words in left-to-right order
+-   ein Bottom-Up Parser sucht nach der von rechtskanonischen Ableitung
 
--   a bottom-up parser then looks for the rightmost derivation
-
--   for a derivation:
+-   für eine Herleitung
 
     $Goal = \gamma_0 \mapsto \gamma_1 \mapsto \gamma_2 \mapsto ... \mapsto \gamma_{n-1} \mapsto \gamma_n = sentence$
 
-    the parser discovers $\gamma_i \mapsto \gamma_{i+1}$ before it discovers
-    $\gamma_{i-1} \mapsto \gamma_i$
+    findet der Parser $\gamma_i \mapsto \gamma_{i+1}$ bevor er
+    $\gamma_{i-1} \mapsto \gamma_i$ findet
 
 ## LR(1) Parser
 
--   with an unambiguous grammar, the rightmost derivation is unique
+-   die rechtskanonische Ableitung ist eindeutig, wenn die Grammatik keine
+    Mehrdeutigkeiten enthält
 
--   for a large class of unambiguous grammars, $\gamma_{i-1}$ can be determined
-    directly from $\gamma_i$ and a limited amount of lookahead
+-   für eine große Klassen eindeutiger Grammatiken ist $\gamma_{i-1}$ direkt
+    durch $\gamma_i$ und ein kleines bißchen Lookahead bestimmt
 
--   for such grammars, we can construct an efficient handle-finder, using a technique
-    called LR parsing
+-   für solche Grammatiken können wir einen effizienten Algorithmus zum finden
+    von Handles konstruieren
 
--   an LR(1) parser scans the input from left to right to build a rightmost derivation
-    in reverse
+-   die Technik dazu heißt LR-Parsing
 
--   the name LR(1) comes from
+-   ein LR(1)-Parser liest den Eingabestrom von links nach rechts um eine
+    rechtskanonische Ableitung rückwärts herzuleiten
+
+-   der Name LR(1) bezieht sich auf
 
     -   **L**eft-to-right scan,
 
-    -   **R**everse rightmost derivation, and
+    -   **R**everse rightmost derivation, und
 
     -   **1** symbol of lookahead.
 
-# Practical Parsing Issues
+# Praktische Parsing-Probleme
 
 ## Error Recovery
 
--   a parser should find as many syntax errors as possible in each compilation
+-   ein Parser sollt soviele Syntaxfehler wie möglich in einem Durchgang finden
 
--   this requires a mechanism that lets the parser recover from an error by moving
-    to a state where it can continue parsing
+-   dazu benötigen wir einen Mechanismus mit dem der Parser nach einem Fehler
+    wieder in einen Zustand kommen kann aus dem er weiter parsen kann
 
--   a common way is to select one or more words that the parser can use to
-    synchronize the input with its internal state
+-   ein üblicher Ansatz ist eine oder mehrere Wörter zu wählen mit denen der Parser
+    den Eingabestrom wieder mit seinem internen Zustand synchronisieren kann
 
--   when the parser encounters an error, it discards input symbols until it finds
-    such a synchronization word
+-   wenn der Parser einen Fehler findet, verwirft er solange Eingabesymbole, bis
+    er ein solches Synchronisierungswort findet
 
-## Finding Semicolons
+## Semikolons finden
 
--   in languages with semicolons as statement separators it calls the scanner
-    repeatedly until it finds a semicolon and then changes its state to one that
-    would have resulted from successful recognition of a complete statement
+-   in Sprachen die ein Semikolon verwenden um Anweisungen von einander zu trennen,
+    braucht der Parser nur alles bis zum nächsten Semikolon verwerfen
 
--   in a recursive-descent parser, the code can simply discard words until it finds
-    a semicolon
+-   in einem rekursiv-absteigenden Parser kann der Code einfach die Wörter bis
+    dahin ignorieren
 
--   in an LR(1) parser this is more complex
+-   bei einem LR(1)-Parser ist das etwas konplexer
 
--   in table-driven parsers the compiler needs a way of telling the parser generator
-    where to synchronize
+-   bei einem table-driven Parser muss der Compiler dem Parsergenerator sagen können
+    wo er synchronisieren kann
 
-    -   this can be done using error productions --- a production whose right-hand side
-        includes a reserved word that indicates a error synchronization point and
-        one or more synchronizing tokens
+    -   das kann durch "Fehlerproduktionsregeln" erreicht werden --- eine
+        Produktionsregel bei der die rechte Seite ein reserviertes Wort enthält, dass
+        die Fehlersynchronisation anzeugt und ein oder mehrere Synchronisationstokens
 
-## Unary Operators
+## Unäre Operatoren
 
--   adding unary operators to the expression grammar requires some care
+-   es ist nicht ganz einfach unäre Operatoren zu der Expression-Grammatik
+    hinzuzufügen
 
--   consider adding a unary absolute-value operator $||$ with higher precedence
-    than binary operators and lower precedence than parentheses
+-   fügen wir z.B. den unären Absolutbetragsoperator $||$ mit höherem Vorrang
+    als die binären Operatoren und geringerem Vorrang als Klammern hinzu:
 
     ---- --------- --------- ----------------------------------
      $0$ *Goal*    $\mapsto$ *Expr*
@@ -514,66 +515,70 @@ TODO: Übersetzen ab hier
     $11$           $|$       `name`
     ---- --------- --------- ----------------------------------
 
--   this grammar does not allow the programmer to write $||\,||x$
+-   diese Grammatik erlaubt beispielsweise nicht $||\,||x$ zu schreiben
 
-## Handling Context-Sensitive Ambiguity
+## Kontextsensitive Mehrdeutigkeit
 
--   using one word to represent different meanings can create a syntactic ambiguity
+-   das Benutzen eines Wortes um mehrere Bedeutungen zu repräsentieren, kann
+    syntaktische Uneindeutigkeit hervorrufen
 
--   one example arose in several early programming languages, including Fortran, PL/I,
-    and Ada
+-   ein Beispiel gab es in einigen frühen Programmiersprachen, wie z.B. Fortran, PL/I
+    und Ada
 
--   these languages used parentheses for both
+-   diese Sprachen nutzen runde Klammern für beides
 
-    -   subscript expressions of an array reference, and
+    -   Zugriff auf Element eines Arrays über den Index
 
-    -   argument lists of subroutines and functions
+    -   Parameterlisten von Prozeduren und Funktionen
 
--   given a textual reference, such as `foo(i,j)`, the compiler cannot tell if
-    `foo` is a two-dimensional array or a procedure
 
--   the scanner undoubtedly classified `foo` as a `name`
+-   bei `foo(i,j)` konnte der Compiler also nicht feststellen ob `foo` ein
+    zweidimensionales Array oder eine Prozedur/Funktion ist
 
-## Two different approaches to solve this problem
+-   der Scanner klassifizierte `foo` einfach nur als `name`
 
-1.  rewrite the grammar to combine both the function invocation and the array
-    reference into a single production
+## Zwei verschiedene Ansätze um das Problem zu lösen
 
-    -   the issue is then deferred until a later step in translation
+1.  umschreiben der Grammatik, so dass Funktionsaufruf und Array-Referenz eine
+    einzige Produktion sind
 
-    -   it can then be resolved with information from declarations
+    -   das Problem ist dann in einen späteren Schritt der Übersetzung verschoben
 
-    -   the parser must construct a representation that preserves all information
-        needed
+    -   es kann dann mit Hilfe von Informationen aus Deklarationen gelöst werden
 
-    -   the later step will rewrite the reference
+    -   der Parser muss eine Repräsentation konstruieren, die alle später notwendigen
+        Informationen enthält
 
-2.  the scanner can classify identifiers based on their declared types
+    -   der spätere Schritt schreibt dies dann noch einmal um
 
-    -   requires some hand-shaking between the scanner and the parser
+2.  der Scanner kann die Bezeichner gemäß ihrer deklarierten Typen klassifizieren
 
-    -   it's not hard as long as the language has a define-before-use rule
 
-    -   the declaration is parsed before the use occurs
+    -   das setzt eine Zusammenarbeit zwischen Scanner und Parser voraus
 
-    -   the parser can make its internal symbol table available to the scanner
-        to resolve identifiers in different classes, such as `variable-name` and
+    -   solange die Sprache die "define-before-use"-Regel befolgt, ist das
+        problemlos machbar
+
+    -   die Deklaration wird dann ja vor dem Scannen des Ausdrucks bereits geparst
+
+    -   der Parser kann seine interne Symboltabelle dem Scanner zur Verfügung stellen
+        um Bezeichner in verschiedene Klassen einzuteilen, z.B. `variable-name` und
         `function-name`
 
-## Left versus Right Recursion
+## Links vs. Rechtsrekursion
 
--   top-down parsers need right recursive grammars, but bottom-up parsers can work
-    with both left and right recursive grammars
+-   Top-Down Parser brauchen rechtsrekursive Grammatiken, Bottom-Up Parser
+    können mit beiden arbeiten
 
--   thus, the compiler writer must choose
+-   der Compilerbauer muss auswählen
 
--   several factors play into this decision
+-   verschiedene Faktoren beeinflussen die Entscheidung:
 
-    Stack Depth
-    :   in general left recursion can lead to smaller stack depths
+    Stacktiefe
+    :   im allgemeinen kann Linksrekursion mit geringeren Stacktiefen zurecht kommen
 
-    Associativity
-    :   left recursion naturally produces left associativity, right recursion right
-        associativity
+    Assoziativität
+    :   Linksrekursion erzeugt auf natürliche Weise Linksassoziativität,
+        Rechtsrekursion erzeugt Rechtassoziativität
 
 <!-- vim:spell spelllang=de: -->
