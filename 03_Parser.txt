@@ -319,7 +319,7 @@ $11$           $|$       `name`
 
     ---- ---------- --------- ------------------------
     $11$ *Factor*    $\mapsto$ `name` *Arguments*
-    $12$ *Arguments* $|$       [ *ArgList* ]
+    $12$ *Arguments* $\mapsto$ [ *ArgList* ]
     $13$             $|$       ( *ArgList* )
     $14$             $|$       $\epsilon$ 
     ---- ---------- --------- ------------------------
