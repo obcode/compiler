@@ -1,7 +1,0 @@
-digraph while {
-    size="3,3"
-    node [shape = plaintext];
-    "while <expression>" -> "<statement>"
-    "<statement>" -> "while <expression>"
-    "while <expression>" -> "<nextStatement>"
-}

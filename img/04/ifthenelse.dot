@@ -1,8 +1,0 @@
-digraph while {
-    size="3,3"
-    node [shape = plaintext];
-    "if <expression>" -> "<thenStatement>"
-    "if <expression>" -> "<elseStatement>"
-    "<thenStatement>" -> "<nextStatement>"
-    "<elseStatement>" -> "<nextStatement>"
-}
